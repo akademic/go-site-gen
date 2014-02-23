@@ -1,6 +1,7 @@
 package main
 
 import (
+    "os"
     "time"
     "regexp"
     "io/ioutil"
@@ -19,12 +20,19 @@ type Page struct {
     Title string
     Author string
     PubTime time.Time
+    UpdateTime time.Time
     Layout string
     Content string
 }
 
 func loadPage(path string) ( *Page ) {
     fmt.Println(path)
+
+    page_fi, err := os.Stat(path)
+    if err != nil {
+        die("Unable to stat page file [%s]", path)
+    }
+
     bytes, err := ioutil.ReadFile(path)
 
     if err != nil {
@@ -32,6 +40,7 @@ func loadPage(path string) ( *Page ) {
     }
 
     page, err := newPage(bytes)
+    page.UpdateTime = page_fi.ModTime()
     fmt.Println(page)
     if err != nil {
         die("Unable to create new page [%s]: "+err.Error(), path)
