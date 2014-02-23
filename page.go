@@ -11,7 +11,7 @@ import (
 var (
     HeaderRE = regexp.MustCompile("^(?s)(@.+?)\n\n")
     AttrsRE = regexp.MustCompile("(?Um)^@([^\\:]+?)\\: (.+)$")
-    TitleRE = regexp.MustCompile("#([^#]+)\n")
+    TitleRE = regexp.MustCompile("#([^#\n]+)")
 )
 
 type Page struct {
@@ -53,7 +53,9 @@ func newPage(data []byte) ( *Page, error ) {
 func parsePage(content string) (*Page, error) {
     page := &Page{}
     h := make(map[string]string)
+
     if len(content) > 0 && content[0] == '@' {
+        //parsing headers
         fmt.Println("Start parsing headers")
         if m := HeaderRE.FindStringSubmatch(content); m != nil {
             header := m[0]
@@ -63,16 +65,17 @@ func parsePage(content string) (*Page, error) {
                     h[name] = value
                 }
             } else {
-                return nil, errors.New("Bad headers")
+                return nil, errors.New("Bad headers format")
             }
         } else {
-            return nil, errors.New("Bad headers")
+            return nil, errors.New("Headers not found")
         }
 
         fmt.Println("Headers:", h)
         page.Layout = h["layout"]
         page.Author = h["author"]
 
+        //date header parsing
         var err error = nil
         var d time.Time
 
@@ -88,14 +91,14 @@ func parsePage(content string) (*Page, error) {
 
         page.PubTime = d
     
+        //get clean content
         content = HeaderRE.ReplaceAllLiteralString(content, "")
         
         page.Content = content
 
         if m := TitleRE.FindStringSubmatch(content); m != nil {
-            fmt.Println("found title")
-            fmt.Println(m[1])
             page.Title = m[1]
+            fmt.Println("Title found:", page.Title)
         } else {
             return nil, errors.New("Title not found")
         }
