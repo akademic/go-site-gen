@@ -7,31 +7,27 @@ Post -> Prepare custom tags -> MarkdownToHtml -> html/template into ready file
 
 import (
     "os"
-    "time"
     "io/ioutil"
     "log"
     "path/filepath"
 )
 
-type Post struct {
-    Slug string
-    Title string
-    PubTime time.Time
-    Content []byte
-}
-
-func getPosts() ([]*Post) {
+func getPosts() ([]*Page) {
 
     list, err := getPostsList()
     if err != nil {
         log.Fatal("FATAL ", err)
     }
 
-    posts := make([]*Post, 0, len(list))
+    posts := make([]*Page, 0, len(list))
 
+    i := 0
     for _, fi := range list {
-        post, err := loadPost(fi)
+        post := loadPost(fi)
+        posts[i] = post
     }
+
+    return posts
 }
 
 func getPostsList() ([]os.FileInfo, error) {
@@ -40,6 +36,7 @@ func getPostsList() ([]os.FileInfo, error) {
 		return nil, err
 	}
 
+    //filter only directories
     for i := 0; i < len(fis); {
         if !fis[i].IsDir() {
             fis[i], fis = fis[len(fis)-1], fis[:len(fis)-1]
@@ -51,6 +48,15 @@ func getPostsList() ([]os.FileInfo, error) {
     return fis, nil
 }
 
-func loadPost( fi os.FileInfo ) ( *Post, error ) {
-    f, err := os.Open(filepath.Join(PostsDir, fi.Name(), "index.md"))
+func loadPost( fi os.FileInfo ) ( *Page ) {
+    post_path := filepath.Join(PostsDir, fi.Name(), "index.md")
+    post_fi, err := os.Stat(post_path)
+    if err != nil {
+        die("Unable to stat post file [%s]", post_path)
+    }
+    post := loadPage(post_path)
+    post.PubTime = post_fi.ModTime()
+
+    return post
 }
+
