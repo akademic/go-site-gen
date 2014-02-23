@@ -50,12 +50,8 @@ func getPostsList() ([]os.FileInfo, error) {
 
 func loadPost( fi os.FileInfo ) ( *Page ) {
     post_path := filepath.Join(PostsDir, fi.Name(), "index.md")
-    post_fi, err := os.Stat(post_path)
-    if err != nil {
-        die("Unable to stat post file [%s]", post_path)
-    }
+    
     post := loadPage(post_path)
-    post.PubTime = post_fi.ModTime()
 
     return post
 }
