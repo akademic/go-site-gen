@@ -6,12 +6,13 @@ import (
     "io/ioutil"
     "errors"
     "fmt"
+    "github.com/russross/blackfriday"
 )
 
 var (
     HeaderRE = regexp.MustCompile("^(?s)(@.+?)\n\n")
     AttrsRE = regexp.MustCompile("(?Um)^@([^\\:]+?)\\: (.+)$")
-    TitleRE = regexp.MustCompile("#([^#\n]+)")
+    TitleRE = regexp.MustCompile("# ([^#\n]+)")
 )
 
 type Page struct {
@@ -46,6 +47,8 @@ func newPage(data []byte) ( *Page, error ) {
     if err != nil {
         return nil, err
     }
+
+    page.Content = string(blackfriday.MarkdownCommon([]byte(page.Content)))
 
     return page, nil
 }
