@@ -10,7 +10,13 @@ import (
     "io/ioutil"
     "log"
     "path/filepath"
+    "sort"
 )
+
+type sortablePosts []*Page
+func (s sortablePosts) Len() int           { return len(s) }
+func (s sortablePosts) Less(i, j int) bool { return s[i].PubTime.Before(s[j].PubTime) }
+func (s sortablePosts) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func getPosts() ([]*Page) {
 
@@ -21,11 +27,12 @@ func getPosts() ([]*Page) {
 
     posts := make([]*Page, 0, len(list))
 
-    i := 0
     for _, fi := range list {
         post := loadPost(fi)
-        posts[i] = post
+        posts = append(posts, post)
     }
+
+    sort.Sort(sort.Reverse(sortablePosts(posts)))
 
     return posts
 }
