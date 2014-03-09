@@ -6,12 +6,14 @@ import (
     "os"
 )
 
-func createPost(post *Page, save_path string) {
+func createPost(post *Post) {
 
     postTemplData := map[string] interface {} {
         "Title": post.Title,
         "Body": template.HTML(post.Content),
         "PubTime": post.PubTime,
+        "Next": post.Next,
+        "Prev": post.Prev,
     }
 
     t, err := template.ParseFiles( filepath.Join( TemplatesDir, "default.html"),
@@ -20,7 +22,7 @@ func createPost(post *Page, save_path string) {
         panic(err)
     }
 
-    f, err := os.Create( save_path )
+    f, err := os.Create( filepath.Join(post.SavePath, "index.html") )
     if err != nil {
         panic(err)
     }
