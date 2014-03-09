@@ -37,11 +37,7 @@ func _init() {
 
 func main() {
     _init()
-    /*loadPage(PostsDir+"/test_post/index.md")*/
-    posts := getPosts()
-    for _, post := range posts {
-        createPost(post)
-    }
+    genPosts()
 }
 
 func die(format string, v ...interface{}) {
