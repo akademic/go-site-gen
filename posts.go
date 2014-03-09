@@ -20,7 +20,15 @@ var (
     filesToMove []string
 )
 
-type sortablePosts []*Page
+type Post struct {
+    *Page
+    SavePath string
+    RelSavePath string
+    Next *Post
+    Prev *Post
+}
+
+type sortablePosts []*Post
 func (s sortablePosts) Len() int           { return len(s) }
 func (s sortablePosts) Less(i, j int) bool { return s[i].PubTime.Before(s[j].PubTime) }
 func (s sortablePosts) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
@@ -28,12 +36,18 @@ func (s sortablePosts) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func genPosts() {
 
     posts := getPosts()
-    for _, post := range posts {
-        save_dir := getPostSavePath(post)
-        save_path := filepath.Join(save_dir, "index.html")
+    for i, post := range posts {
 
-        createPost(post, save_path)
-        movePostFiles(filepath.Dir(post.Path), save_dir)
+        if i > 0 {
+            post.Prev = posts[i-1]
+        }
+        
+        if i < len(posts) - 1 {
+            post.Next = posts[i+1]
+        }
+
+        createPost(post)
+        movePostFiles(filepath.Dir(post.Path), filepath.Dir(post.SavePath))
     }
 }
 
@@ -68,25 +82,27 @@ func postDirVisit(path string, f os.FileInfo, err error) error {
     return err
 }
 
-func getPostSavePath(post *Page) (string) {
+func getPostSavePath(post *Page) (string, string) {
     parts := strings.Split(post.Path, "/")
-    name := parts[len(parts)-2 : len(parts)-1][0]
+    name := parts[len(parts)-2]
     year := strconv.Itoa(post.PubTime.Year())
 
     save_dir := filepath.Join(BlogDir, year, name)
     os.MkdirAll(save_dir, 0700)
 
-    return save_dir
+    rel_save_dir, _ := filepath.Rel(BlogDir, save_dir)
+
+    return rel_save_dir, save_dir
 }
 
-func getPosts() ([]*Page) {
+func getPosts() ([]*Post) {
 
     list, err := getPostsList()
     if err != nil {
         log.Fatal("FATAL ", err)
     }
 
-    posts := make([]*Page, 0, len(list))
+    posts := make([]*Post, 0, len(list))
 
     for _, fi := range list {
         post := loadPost(fi)
@@ -116,10 +132,20 @@ func getPostsList() ([]os.FileInfo, error) {
     return fis, nil
 }
 
-func loadPost( fi os.FileInfo ) ( *Page ) {
+func loadPost( fi os.FileInfo ) ( *Post ) {
     post_path := filepath.Join(PostsDir, fi.Name(), "index.md")
     
-    post := loadPage(post_path)
+    page := loadPage(post_path)
+    
+    rel_save_dir, save_dir := getPostSavePath(page)
+
+    post := &Post{
+        page,
+        filepath.Join(save_dir),
+        filepath.Join(rel_save_dir),
+        nil,
+        nil,
+    }
 
     return post
 }
