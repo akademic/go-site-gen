@@ -11,6 +11,7 @@ var (
     PostsDir string
     PublicDir string
     TemplatesDir string
+    BlogDir string
 
 )
 
@@ -27,7 +28,8 @@ func _init() {
 		log.Fatal("FATAL ", err)
 	}
 
-    PublicDir = filepath.Join(pwd, "_public")
+    PublicDir = filepath.Join(pwd, "public")
+    BlogDir = filepath.Join(PublicDir, "blog")
 	PostsDir = filepath.Join(pwd, "_posts")
 	TemplatesDir = filepath.Join(pwd, "_layouts")
 
@@ -35,7 +37,11 @@ func _init() {
 
 func main() {
     _init()
-    loadPage(PostsDir+"/test_post/index.md")
+    /*loadPage(PostsDir+"/test_post/index.md")*/
+    posts := getPosts()
+    for _, post := range posts {
+        createPost(post)
+    }
 }
 
 func die(format string, v ...interface{}) {
