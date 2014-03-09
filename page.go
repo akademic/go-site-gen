@@ -17,6 +17,7 @@ var (
 )
 
 type Page struct {
+    Path string
     Title string
     Author string
     PubTime time.Time
@@ -40,6 +41,7 @@ func loadPage(path string) ( *Page ) {
     }
 
     page, err := newPage(bytes)
+    page.Path = path
     page.UpdateTime = page_fi.ModTime()
     fmt.Println(page)
     if err != nil {
