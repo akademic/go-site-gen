@@ -47,7 +47,7 @@ func genPosts() {
         }
 
         createPost(post)
-        movePostFiles(filepath.Dir(post.Path), filepath.Dir(post.SavePath))
+        movePostFiles(filepath.Dir(post.Path), post.SavePath)
     }
 }
 
@@ -141,8 +141,8 @@ func loadPost( fi os.FileInfo ) ( *Post ) {
 
     post := &Post{
         page,
-        filepath.Join(save_dir),
-        filepath.Join(rel_save_dir),
+        save_dir,
+        rel_save_dir,
         nil,
         nil,
     }
