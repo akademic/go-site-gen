@@ -14,6 +14,7 @@ var (
     HeaderRE = regexp.MustCompile("^(?s)(@.+?)\n\n")
     AttrsRE = regexp.MustCompile("(?Um)^@([^\\:]+?)\\: (.+)$")
     TitleRE = regexp.MustCompile("# ([^#\n]+)")
+    FirstParaRE = regexp.MustCompile(`^(# [^#\n]+\n\n([^\n]+\n)+)\n`)
 )
 
 type Page struct {
@@ -23,6 +24,7 @@ type Page struct {
     PubTime time.Time
     UpdateTime time.Time
     Layout string
+    Summary string
     Content string
 }
 
@@ -107,6 +109,13 @@ func parsePage(content string) (*Page, error) {
     
         //get clean content
         content = HeaderRE.ReplaceAllLiteralString(content, "")
+        fmt.Println(content)
+
+        if m := FirstParaRE.FindStringSubmatch(content); len(m) != 0 {
+            page.Summary = m[1]
+        } else {
+            return nil, errors.New("Summary not found")
+        }
         
         page.Content = content
 
