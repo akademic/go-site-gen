@@ -30,3 +30,29 @@ func createPost(post *Post) {
 
     t.Execute(f, postTemplData)
 }
+
+type templIndex struct {
+    SiteData SiteData
+    Recent []*Post
+}
+
+func createIndexPage() {
+    tpl := new(templIndex)
+    tpl.SiteData = SiteDataVar
+    tpl.Recent = getPostRecent()
+
+    t, err := template.ParseFiles( filepath.Join( TemplatesDir, "default.html"),
+                                    filepath.Join( TemplatesDir, "index.html"))
+    if err != nil {
+        panic(err)
+    }
+    
+    f, err := os.Create( filepath.Join(PublicDir, "index.html") )
+
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    t.Execute(f, tpl)
+}
