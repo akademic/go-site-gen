@@ -16,6 +16,7 @@ var (
     PublicDir string
     TemplatesDir string
     BlogDir string
+    SiteDir string
     SiteDataVar SiteData
 )
 
@@ -37,6 +38,7 @@ func _init() {
     BlogDir = filepath.Join(PublicDir, "blog")
 	PostsDir = filepath.Join(pwd, "_posts")
 	TemplatesDir = filepath.Join(pwd, "_layouts")
+	SiteDir = filepath.Join(pwd, "_site")
 
     SiteDataVar.DomainName = "akademic.name"
 }
@@ -45,6 +47,7 @@ func main() {
     _init()
     genPosts()
     createIndexPage()
+    genSite()
 }
 
 func die(format string, v ...interface{}) {
