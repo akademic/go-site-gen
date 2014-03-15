@@ -7,17 +7,22 @@ import (
     "fmt"
 )
 
+type SiteData struct {
+    DomainName string
+}
+
 var (
     PostsDir string
     PublicDir string
     TemplatesDir string
     BlogDir string
-
+    SiteDataVar SiteData
 )
 
 const (
     DateFormat     = "2006-01-02"
     DateTimeFormat = DateFormat + " 15:04"
+    RecentPostsCount = 4
 )
 
 func _init() {
@@ -33,11 +38,13 @@ func _init() {
 	PostsDir = filepath.Join(pwd, "_posts")
 	TemplatesDir = filepath.Join(pwd, "_layouts")
 
+    SiteDataVar.DomainName = "akademic.name"
 }
 
 func main() {
     _init()
     genPosts()
+    createIndexPage()
 }
 
 func die(format string, v ...interface{}) {
