@@ -18,6 +18,7 @@ import (
 
 var (
     filesToMove []string
+    Posts []*Post
 )
 
 type Post struct {
@@ -35,20 +36,37 @@ func (s sortablePosts) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func genPosts() {
 
-    posts := getPosts()
-    for i, post := range posts {
+    Posts = getPosts()
+    for i, post := range Posts {
 
         if i > 0 {
-            post.Prev = posts[i-1]
+            post.Prev = Posts[i-1]
         }
         
-        if i < len(posts) - 1 {
-            post.Next = posts[i+1]
+        if i < len(Posts) - 1 {
+            post.Next = Posts[i+1]
         }
 
         createPost(post)
         movePostFiles(filepath.Dir(post.Path), post.SavePath)
     }
+}
+
+func getPostRecent() []*Post {
+
+    var recent_count int
+    if len(Posts) < RecentPostsCount {
+        recent_count = len(Posts)
+    } else {
+        recent_count = RecentPostsCount
+    }
+
+    recent := make( []*Post, recent_count )
+    for i := 0; i < recent_count; i++ {
+        recent[i] = Posts[i]
+    }
+    
+    return recent
 }
 
 func movePostFiles(fromDir, toDir string) {
@@ -90,7 +108,7 @@ func getPostSavePath(post *Page) (string, string) {
     save_dir := filepath.Join(BlogDir, year, name)
     os.MkdirAll(save_dir, 0700)
 
-    rel_save_dir, _ := filepath.Rel(BlogDir, save_dir)
+    rel_save_dir, _ := filepath.Rel(PublicDir, save_dir)
 
     return rel_save_dir, save_dir
 }
