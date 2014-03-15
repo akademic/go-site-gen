@@ -14,7 +14,7 @@ var (
     HeaderRE = regexp.MustCompile("^(?s)(@.+?)\n\n")
     AttrsRE = regexp.MustCompile("(?Um)^@([^\\:]+?)\\: (.+)$")
     TitleRE = regexp.MustCompile("# ([^#\n]+)")
-    FirstParaRE = regexp.MustCompile(`^(# [^#\n]+\n\n([^\n]+\n)+)\n`)
+    FirstParaRE = regexp.MustCompile(`^# [^#\n]+\n\n(([^\n]+\n)+)\n`)
 )
 
 type Page struct {
