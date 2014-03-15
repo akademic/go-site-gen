@@ -36,6 +36,8 @@ type templIndex struct {
     Recent []*Post
 }
 
+func html (x string) interface{} { return template.HTML(x) }
+
 func createIndexPage() {
     tpl := new(templIndex)
     tpl.SiteData = SiteDataVar
@@ -46,6 +48,8 @@ func createIndexPage() {
     if err != nil {
         panic(err)
     }
+
+    t = t.Funcs(template.FuncMap{"html": html})
     
     f, err := os.Create( filepath.Join(PublicDir, "index.html") )
 
