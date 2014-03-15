@@ -62,6 +62,7 @@ func newPage(data []byte) ( *Page, error ) {
     }
 
     page.Content = string(blackfriday.MarkdownCommon([]byte(page.Content)))
+    page.Summary = string(blackfriday.MarkdownCommon([]byte(page.Summary)))
 
     return page, nil
 }
