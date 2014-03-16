@@ -15,6 +15,7 @@ var (
     PostsDir string
     PublicDir string
     TemplatesDir string
+    IncludesDir string
     BlogDir string
     SiteDir string
     SiteDataVar SiteData
@@ -39,8 +40,17 @@ func _init() {
 	PostsDir = filepath.Join(pwd, "_posts")
 	TemplatesDir = filepath.Join(pwd, "_layouts")
 	SiteDir = filepath.Join(pwd, "_site")
+    IncludesDir = filepath.Join(pwd, "_includes")
 
-    SiteDataVar.DomainName = "akademic.name"
+    //create directories
+    os.MkdirAll(BlogDir, 0700)
+    os.MkdirAll(PostsDir, 0700)
+    os.MkdirAll(TemplatesDir, 0700)
+    os.MkdirAll(SiteDir, 0700)
+    os.MkdirAll(IncludesDir, 0700)
+
+
+    SiteDataVar.DomainName = ""
 }
 
 func main() {
