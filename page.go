@@ -110,7 +110,6 @@ func parsePage(content string) (*Page, error) {
     
         //get clean content
         content = HeaderRE.ReplaceAllLiteralString(content, "")
-        fmt.Println(content)
 
         if m := FirstParaRE.FindStringSubmatch(content); len(m) != 0 {
             page.Summary = m[1]
@@ -118,7 +117,6 @@ func parsePage(content string) (*Page, error) {
             return nil, errors.New("Summary not found")
         }
         
-        page.Content = content
 
         if m := TitleRE.FindStringSubmatch(content); m != nil {
             page.Title = m[1]
@@ -126,6 +124,10 @@ func parsePage(content string) (*Page, error) {
         } else {
             return nil, errors.New("Title not found")
         }
+
+        content = TitleRE.ReplaceAllLiteralString(content, "")
+        
+        page.Content = content
     }
 
     return page, nil
