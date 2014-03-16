@@ -4,7 +4,15 @@ import (
     "html/template"
     "path/filepath"
     "os"
+    "time"
 )
+
+var FuncsMap = template.FuncMap{
+    "fmttime": func(t time.Time, f string) string {
+        return t.Format(f)
+    },
+    "html": func(x string) interface{} {return template.HTML(x)},
+}
 
 func createPost(post *Post) {
 
@@ -17,11 +25,7 @@ func createPost(post *Post) {
         "Prev": post.Prev,
     }
 
-    t, err := template.ParseFiles( filepath.Join( TemplatesDir, "default.html"),
-                                    filepath.Join( TemplatesDir, "post.html"))
-    if err != nil {
-        panic(err)
-    }
+    t := template.Must(template.New("default.html").Funcs(FuncsMap).ParseFiles(filepath.Join( TemplatesDir, "default.html"), filepath.Join( TemplatesDir, "post.html")) )
 
     f, err := os.Create( filepath.Join(post.SavePath, "index.html") )
     if err != nil {
@@ -37,20 +41,12 @@ type templIndex struct {
     Recent []*Post
 }
 
-func html (x string) interface{} { return template.HTML(x) }
-
 func createIndexPage() {
     tpl := new(templIndex)
     tpl.SiteData = SiteDataVar
     tpl.Recent = getPostRecent()
 
-    t, err := template.ParseFiles( filepath.Join( TemplatesDir, "default.html"),
-                                    filepath.Join( TemplatesDir, "index.html"))
-    if err != nil {
-        panic(err)
-    }
-
-    t = t.Funcs(template.FuncMap{"html": html})
+    t := template.Must(template.New("default.html").Funcs(FuncsMap).ParseFiles(filepath.Join( TemplatesDir, "default.html"), filepath.Join( TemplatesDir, "index.html")) )
     
     f, err := os.Create( filepath.Join(PublicDir, "index.html") )
 
