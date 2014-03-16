@@ -43,7 +43,6 @@ func _init() {
     IncludesDir = filepath.Join(pwd, "_includes")
 
     //create directories
-    os.MkdirAll(BlogDir, 0700)
     os.MkdirAll(PostsDir, 0700)
     os.MkdirAll(TemplatesDir, 0700)
     os.MkdirAll(SiteDir, 0700)
