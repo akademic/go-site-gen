@@ -7,6 +7,17 @@ import (
     "time"
 )
 
+type templIndex struct {
+    SiteData SiteData
+    Recent []*Post
+}
+
+type templPost struct {
+    SiteData SiteData
+    Post *Post
+}
+
+
 var FuncsMap = template.FuncMap{
     "fmttime": func(t time.Time, f string) string {
         return t.Format(f)
@@ -16,14 +27,9 @@ var FuncsMap = template.FuncMap{
 
 func createPost(post *Post) {
 
-    postTemplData := map[string] interface {} {
-        "SiteData": SiteDataVar,
-        "Title": post.Title,
-        "Body": template.HTML(post.Content),
-        "PubTime": post.PubTime,
-        "Next": post.Next,
-        "Prev": post.Prev,
-    }
+    tpl := new(templPost)
+    tpl.SiteData = SiteDataVar
+    tpl.Post = post
 
     t := template.Must(template.New("default.html").Funcs(FuncsMap).ParseFiles(filepath.Join( TemplatesDir, "default.html"), filepath.Join( TemplatesDir, "post.html")) )
 
@@ -33,12 +39,7 @@ func createPost(post *Post) {
     }
     defer f.Close()
 
-    t.Execute(f, postTemplData)
-}
-
-type templIndex struct {
-    SiteData SiteData
-    Recent []*Post
+    t.Execute(f, tpl)
 }
 
 func createIndexPage() {
