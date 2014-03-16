@@ -9,6 +9,7 @@ import (
 func createPost(post *Post) {
 
     postTemplData := map[string] interface {} {
+        "SiteData": SiteDataVar,
         "Title": post.Title,
         "Body": template.HTML(post.Content),
         "PubTime": post.PubTime,
