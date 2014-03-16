@@ -40,11 +40,11 @@ func genPosts() {
     for i, post := range Posts {
 
         if i > 0 {
-            post.Prev = Posts[i-1]
+            post.Next = Posts[i-1]
         }
         
         if i < len(Posts) - 1 {
-            post.Next = Posts[i+1]
+            post.Prev = Posts[i+1]
         }
 
         createPost(post)
