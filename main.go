@@ -24,7 +24,7 @@ var (
 const (
     DateFormat     = "2006-01-02"
     DateTimeFormat = DateFormat + " 15:04"
-    RecentPostsCount = 4
+    RecentPostsCount = 8
 )
 
 func _init() {
@@ -56,6 +56,7 @@ func main() {
     _init()
     genPosts()
     createIndexPage()
+    createPostRss()
     genSite()
 }
 
