@@ -18,6 +18,13 @@ type templPost struct {
     Post *Post
 }
 
+type templRss struct {
+    XmlHeader string
+    SiteData SiteData
+    PubTime time.Time
+    Recent []*Post
+}
+
 
 var FuncsMap = template.FuncMap{
     "fmttime": func(t time.Time, f string) string {
@@ -62,4 +69,26 @@ func createIndexPage() {
     defer f.Close()
 
     t.Execute(f, tpl)
+}
+
+func createPostRss() {
+    tpl := new(templRss)
+    tpl.XmlHeader = `<?xml version="1.0" encoding="UTF-8"?>`
+    tpl.SiteData = SiteDataVar
+    tpl.Recent = getPostRecent()
+    tpl.PubTime = tpl.Recent[0].PubTime
+
+    t := template.Must(template.New("rss.xml").Funcs(FuncsMap).ParseFiles(filepath.Join( TemplatesDir, "rss.xml")) )
+    
+    f, err := os.Create( filepath.Join(PublicDir, "rss.xml") )
+    
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    err = t.Execute(f, tpl)
+    if err != nil {
+        panic(err)
+    }
 }
