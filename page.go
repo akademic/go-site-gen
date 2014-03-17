@@ -20,7 +20,7 @@ var (
 type Page struct {
     Path string
     Title string
-    Author string
+    Headers map[string]string
     PubTime time.Time
     UpdateTime time.Time
     Layout string
@@ -43,12 +43,12 @@ func loadPage(path string) ( *Page ) {
     }
 
     page, err := newPage(bytes)
-    page.Path = path
-    page.UpdateTime = page_fi.ModTime()
-    fmt.Println(page)
     if err != nil {
         die("Unable to create new page [%s]: "+err.Error(), path)
     }
+    page.Path = path
+    page.UpdateTime = page_fi.ModTime()
+    fmt.Println(page)
 
     return page
 }
@@ -89,8 +89,8 @@ func parsePage(content string) (*Page, error) {
         }
 
         fmt.Println("Headers:", h)
+        page.Headers = h
         page.Layout = h["layout"]
-        page.Author = h["author"]
 
         //date header parsing
         var err error = nil
