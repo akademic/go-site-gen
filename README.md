@@ -8,6 +8,6 @@
 * [x] RSS
 * [x] Site pages
 * [ ] Drafts
-* [ ] Site config ini
+* [x] Site config ini
 * [ ] Template data into includes
 * [ ] Example layouts, includes, site
