@@ -5,6 +5,7 @@ import (
     "path/filepath"
     "log"
     "fmt"
+    "github.com/pelletier/go-toml"
 )
 
 type SiteData struct {
@@ -18,13 +19,19 @@ var (
     IncludesDir string
     BlogDir string
     SiteDir string
+
     SiteDataVar SiteData
+
+    //from config file
+    RecentPostsCount int64
+    PublicDirName string
+    BlogDirName string
 )
 
 const (
     DateFormat     = "2006-01-02"
     DateTimeFormat = DateFormat + " 15:04"
-    RecentPostsCount = 8
+    ConfigFile = "config.toml"
 )
 
 func _init() {
@@ -34,9 +41,11 @@ func _init() {
 	if err != nil {
 		log.Fatal("FATAL ", err)
 	}
+    
+    loadConf()
 
-    PublicDir = filepath.Join(pwd, "public")
-    BlogDir = filepath.Join(PublicDir, "blog")
+    PublicDir = filepath.Join(pwd, PublicDirName)
+    BlogDir = filepath.Join(PublicDir, BlogDirName)
 	PostsDir = filepath.Join(pwd, "_posts")
 	TemplatesDir = filepath.Join(pwd, "_layouts")
 	SiteDir = filepath.Join(pwd, "_site")
@@ -47,9 +56,6 @@ func _init() {
     os.MkdirAll(TemplatesDir, 0700)
     os.MkdirAll(SiteDir, 0700)
     os.MkdirAll(IncludesDir, 0700)
-
-
-    SiteDataVar.DomainName = ""
 }
 
 func main() {
@@ -58,6 +64,18 @@ func main() {
     createIndexPage()
     createPostRss()
     genSite()
+}
+
+func loadConf() {
+    cfg, err := toml.LoadFile(ConfigFile)
+    if err != nil {
+        panic(err)
+    }
+
+    SiteDataVar.DomainName = cfg.Get("domain").(string)
+    RecentPostsCount = cfg.Get("recent_posts_count").(int64)
+    PublicDirName = cfg.Get("path.public_dir_name").(string)
+    BlogDirName = cfg.Get("path.blog_dir_name").(string)
 }
 
 func die(format string, v ...interface{}) {

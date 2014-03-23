@@ -55,10 +55,10 @@ func genPosts() {
 func getPostRecent() []*Post {
 
     var recent_count int
-    if len(Posts) < RecentPostsCount {
+    if len(Posts) < int(RecentPostsCount) {
         recent_count = len(Posts)
     } else {
-        recent_count = RecentPostsCount
+        recent_count = int(RecentPostsCount)
     }
 
     recent := make( []*Post, recent_count )
