@@ -36,9 +36,9 @@ var FuncsMap = template.FuncMap{
         return t.Format(f)
     },
     "html": func(x string) interface{} {return template.HTML(x)},
-    "include": func(file string) string {
+    "include": func(file string) template.HTML {
         data, _ := ioutil.ReadFile(filepath.Join(IncludesDir, file))
-        return string(data)
+        return template.HTML(data)
     },
 }
 
