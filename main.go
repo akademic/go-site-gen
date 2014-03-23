@@ -26,6 +26,7 @@ var (
     RecentPostsCount int64
     PublicDirName string
     BlogDirName string
+    RssFileName string
 )
 
 const (
@@ -76,6 +77,7 @@ func loadConf() {
     RecentPostsCount = cfg.Get("recent_posts_count").(int64)
     PublicDirName = cfg.Get("path.public_dir_name").(string)
     BlogDirName = cfg.Get("path.blog_dir_name").(string)
+    RssFileName = cfg.Get("path.rss_file_name").(string)
 }
 
 func die(format string, v ...interface{}) {

@@ -85,7 +85,7 @@ func createPostRss() {
 
     t := template.Must(template.New("rss.xml").Funcs(FuncsMap).ParseFiles(filepath.Join( TemplatesDir, "rss.xml")) )
     
-    f, err := os.Create( filepath.Join(PublicDir, "rss.xml") )
+    f, err := os.Create( filepath.Join(PublicDir, RssFileName) )
     
     if err != nil {
         panic(err)
