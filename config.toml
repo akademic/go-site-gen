@@ -4,3 +4,4 @@ recent_posts_count = 8
 [path]
 public_dir_name = "public"
 blog_dir_name = "blog"
+rss_file_name = "rss.xml"
