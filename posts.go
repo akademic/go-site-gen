@@ -40,11 +40,15 @@ func genPosts() {
     for i, post := range Posts {
 
         if i > 0 {
-            post.Next = Posts[i-1]
+            if _, ok := Posts[i-1].Headers["draft"]; !ok {
+                post.Next = Posts[i-1]
+            }
         }
-        
+
         if i < len(Posts) - 1 {
-            post.Prev = Posts[i+1]
+            if _, ok := Posts[i+1].Headers["draft"]; !ok {
+                post.Prev = Posts[i+1]
+            }
         }
 
         createPost(post)
@@ -61,9 +65,15 @@ func getPostRecent() []*Post {
         recent_count = int(RecentPostsCount)
     }
 
-    recent := make( []*Post, recent_count )
+    recent := make( []*Post, 0 )
     for i := 0; i < recent_count; i++ {
-        recent[i] = Posts[i]
+        if _, ok := Posts[i].Headers["draft"]; ok {
+            if recent_count < len(Posts) {
+                recent_count++
+            }
+        } else {
+            recent = append(recent, Posts[i])
+        }
     }
     
     return recent
